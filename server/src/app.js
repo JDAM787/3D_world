@@ -1,26 +1,18 @@
 import express from 'express';
-import morgan from 'morgan';
-import { corsMiddleware } from './middlewares/corsMiddleware.js';
-import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
-import apiRouter from './routes/index.js';
-import { env } from './config/env.js';
+import cors from 'cors';
+import { router } from './routes/index.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
-const app = express();
+export const app = express();
 
-// Middlewares globales esenciales
-app.use(corsMiddleware);
+// Middlewares esenciales
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-if (env.NODE_ENV !== 'production') {
-  app.use(morgan('dev'));
-}
+// Rutas base
+app.use('/api', router);
 
-// Montaje del router de la API
-app.use('/api', apiRouter);
-
-// Manejo de rutas inexistentes y errores globales
-app.use(notFoundHandler);
+// Middleware centralizado de errores
 app.use(errorHandler);
 
 export default app;
