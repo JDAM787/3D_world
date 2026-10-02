@@ -16,6 +16,7 @@ export function RegisterPage({
   mode: controlledMode,
   onNavigateMode,
   onNavigateHome,
+  onLoginSuccess,
 }) {
   const [internalMode, setInternalMode] = useState('register');
   const mode = controlledMode || internalMode;
@@ -36,6 +37,9 @@ export function RegisterPage({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isLogin && onLoginSuccess) {
+      onLoginSuccess();
+    }
   };
 
   const handleSwitchMode = (newMode) => {
