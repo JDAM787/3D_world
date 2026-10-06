@@ -32,3 +32,9 @@ pnpm-debug.log*
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Graphify local output
+graphify-out/
+GEMINI.md
+.agents
+.gemini

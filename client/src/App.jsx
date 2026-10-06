@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
 import { Footer } from '@/components/Footer';
@@ -7,6 +7,25 @@ import { StoreCatalog } from '@/components/StoreCatalog';
 
 export function App() {
   const [currentView, setCurrentView] = useState('home');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const error = params.get('error');
+
+    if (token) {
+      localStorage.setItem('auth_token', token);
+      const provider = params.get('provider');
+      if (provider) {
+        localStorage.setItem('auth_provider', provider);
+      }
+      setCurrentView('store');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error) {
+      setCurrentView('login');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900">

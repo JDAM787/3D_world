@@ -7,10 +7,17 @@ const FORM_FIELDS = [
 ];
 
 const SOCIAL_ITEMS = [
-  { id: 'social-g', label: 'G' },
-  { id: 'social-f', label: 'f' },
-  { id: 'social-x', label: 'X' },
+  { id: 'social-g', label: 'G', provider: 'google' },
+  { id: 'social-f', label: 'f', provider: 'facebook' },
+  { id: 'social-x', label: 'X', provider: 'x' },
 ];
+
+function getAuthEndpoint(provider) {
+  const rawBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const cleanBase = rawBase.replace(/\/$/, '');
+  const prefix = cleanBase.endsWith('/api') ? cleanBase : `${cleanBase}/api`;
+  return `${prefix}/auth/${provider}`;
+}
 
 export function RegisterPage({
   mode: controlledMode,
@@ -178,6 +185,9 @@ export function RegisterPage({
               <button
                 key={item.id}
                 type="button"
+                onClick={() => {
+                  window.location.href = getAuthEndpoint(item.provider);
+                }}
                 className="flex h-10 w-10 items-center justify-center rounded border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
               >
                 {item.label}
