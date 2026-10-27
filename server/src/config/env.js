@@ -8,6 +8,7 @@ export const config = {
   port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  authSecret: process.env.AUTH_SECRET || 'dev_fallback_secret_change_in_prod',
   callbackUrlBase: callbackBase,
   oauth: {
     google: {
@@ -47,6 +48,24 @@ export function isProviderConfigured(provider) {
     return Boolean(providerConfig.clientId && providerConfig.clientSecret);
   }
   return false;
+}
+
+/**
+ * Validates critical environment configuration, enforcing security constraints in production.
+ */
+export function validateEnvironment() {
+  if (config.nodeEnv === 'production') {
+    const missing = [];
+    if (!process.env.AUTH_SECRET || process.env.AUTH_SECRET === 'dev_fallback_secret_change_in_prod') {
+      missing.push('AUTH_SECRET (must be defined and secure in production)');
+    }
+    if (!process.env.CLIENT_URL) {
+      missing.push('CLIENT_URL');
+    }
+    if (missing.length > 0) {
+      throw new Error(`[Security Error] Insecure or missing environment configuration in production: ${missing.join(', ')}`);
+    }
+  }
 }
 
 export default config;

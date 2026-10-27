@@ -7,6 +7,7 @@ const ALLOWED_PROVIDERS = ['google', 'facebook', 'x'];
 export class AuthController {
   /**
    * Redirects the user to the specified OAuth provider's authorization screen.
+   * Generates a cryptographic state and sets up PKCE S256 if needed (SEC-03).
    */
   redirectToProvider = (req, res, next) => {
     try {
@@ -27,6 +28,7 @@ export class AuthController {
 
   /**
    * Handles the OAuth callback from the provider.
+   * Enforces state parameter verification (SEC-03) and issues signed token.
    * On success: Redirects to the frontend with token, or responds with JSON if requested via API.
    * On failure: Redirects to frontend login with error flag, or delegates to errorHandler.
    */
@@ -62,8 +64,10 @@ export class AuthController {
         return res.redirect(`${config.clientUrl}/login?error=auth_failed`);
       }
 
-      // Authenticate and find/create user via service layer
-      const { token, user } = await authService.authenticateWithOAuth(provider, code);
+      const state = req.query.state;
+
+      // Authenticate, validate state, and find/create user via service layer
+      const { token, user } = await authService.authenticateWithOAuth(provider, code, state);
 
       // If requested as API response (e.g. mobile app or automated testing)
       if (isApiRequest) {

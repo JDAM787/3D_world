@@ -1,5 +1,7 @@
 import app from './app.js';
-import { config } from './config/env.js';
+import { config, validateEnvironment } from './config/env.js';
+
+validateEnvironment();
 
 const { port } = config;
 

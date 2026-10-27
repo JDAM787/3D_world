@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { authController } from '../controllers/auth.controller.js';
+import { authRateLimiter } from '../middlewares/rateLimiter.js';
 
 export const authRouter = Router();
+
+// SEC-07: Apply native rate limiting to all auth endpoints
+authRouter.use(authRateLimiter);
 
 /**
  * OAuth Provider Initiation
